@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insights | AI Resume Analysis System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <i class="fas fa-brain"></i> AI Resume Analyzer
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('result') }}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Results</a>
+            </div>
+            <div class="user-info">
+                <span id="displayUserName"></span>
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('logout') }}'"><i
+                        class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container main-content">
+        <div class="section-header animate-fade">
+            <h1>Expert AI Insights</h1>
+            <p>Strategic recommendations to level up your career profile.</p>
+        </div>
+
+        <div class="insights-grid animate-fade" style="animation-delay: 0.1s;">
+            <!-- Strengths -->
+            <div class="card insight-item insight-strengths">
+                <h3><i class="fas fa-award"></i> Key Strengths</h3>
+                <ul id="strengthsList" class="insight-list">
+                    <!-- Dynamic Items -->
+                </ul>
+            </div>
+
+            <!-- Weaknesses -->
+            <div class="card insight-item insight-weaknesses">
+                <h3><i class="fas fa-exclamation-triangle"></i> Areas for Improvement</h3>
+                <ul id="weaknessesList" class="insight-list">
+                    <!-- Dynamic Items -->
+                </ul>
+            </div>
+
+            <!-- Missing Skills -->
+            <div class="card insight-item insight-missing">
+                <h3><i class="fas fa-puzzle-piece"></i> Missing Skills</h3>
+                <ul id="missingSkillsList" class="insight-list">
+                    <!-- Dynamic Items -->
+                </ul>
+            </div>
+
+            <!-- Strategic Advice -->
+            <div class="card insight-item insight-improvement">
+                <h3><i class="fas fa-lightbulb"></i> Strategic Advice</h3>
+                <ul id="improvementsList" class="insight-list">
+                    <!-- Dynamic Items -->
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px;" class="animate-fade">
+            <button class="btn btn-primary" onclick="window.print()" style="max-width: 250px;">
+                <i class="fas fa-download"></i> Download Report (PDF)
+            </button>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/insights.js') }}"></script>
+</body>
+
+</html>

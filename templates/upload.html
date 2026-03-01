@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume | AI Resume Analysis System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <i class="fas fa-brain"></i> AI Resume Analyzer
+            </div>
+            <div class="user-info">
+                <span id="displayUserName"></span>
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('logout') }}'"><i
+                        class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container main-content">
+        <div class="upload-section animate-fade">
+            <div class="section-header">
+                <h1>Analyze Your Resume</h1>
+                <p>Upload your resume to get AI-powered insights and analysis.</p>
+            </div>
+
+            <div class="upload-card">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Drag & Drop Files Here</h3>
+                        <p>Supported formats: .pdf, .docx</p>
+                        <span>or</span>
+                        <input type="file" id="resumeFile" accept=".pdf, .docx" hidden>
+                        <button class="btn btn-secondary" onclick="document.getElementById('resumeFile').click()">Browse
+                            Files</button>
+                    </div>
+                </div>
+
+                <div id="fileInfo" class="file-info hidden">
+                    <i class="fas fa-file-alt"></i>
+                    <span id="fileName">resume.pdf</span>
+                    <button id="removeFile"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="upload-actions">
+                    <button id="analyzeBtn" class="btn btn-primary" disabled>
+                        <span>Analyze Resume</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="loaderOverlay" class="loader-overlay hidden">
+                <div class="loader-content">
+                    <div class="spinner"></div>
+                    <h2>Analyzing resume...</h2>
+                    <p>Our AI is scanning your skills and experience.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+
+</html>

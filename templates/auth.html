@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register | AI Resume Analysis System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- Sign Up Form -->
+        <div class="form-container sign-up-container">
+            <form id="registerForm">
+                <h1>Create Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <div class="input-group">
+                    <input type="text" id="regFullName" placeholder="Full Name" required />
+                    <small class="error-msg"></small>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="regEmail" placeholder="Email" required />
+                    <small class="error-msg"></small>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPassword" placeholder="Password" required />
+                    <i class="fas fa-eye toggle-password" id="toggleRegPassword"></i>
+                    <small class="error-msg"></small>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required />
+                    <i class="fas fa-eye toggle-password" id="toggleRegConfirmPassword"></i>
+                    <small class="error-msg"></small>
+                </div>
+                <button type="submit" class="btn">Sign Up</button>
+            </form>
+        </div>
+
+        <!-- Sign In Form -->
+        <div class="form-container sign-in-container">
+            <form id="loginForm">
+                <h1>Sign in</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your account</span>
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required />
+                    <small class="error-msg"></small>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required />
+                    <i class="fas fa-eye toggle-password" id="toggleLoginPassword"></i>
+                    <small class="error-msg"></small>
+                </div>
+                <a href="#">Forgot your password?</a>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost btn" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start journey with us</p>
+                    <button class="ghost btn" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+
+</html>
