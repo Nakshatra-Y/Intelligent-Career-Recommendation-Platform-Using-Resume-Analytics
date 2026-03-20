@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResumeRadar AI | Smart Resume Analysis</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+  </head>
+
+  <body
+    data-logged-in="{{ 'true' if is_logged_in else 'false' }}"
+    data-show-upload="{{ 'true' if show_upload else 'false' }}"
+  >
+    <nav class="navbar">
+      <div class="container nav-content">
+        <div class="logo">
+          <a href="{{ url_for('index') }}">
+            <i class="fas fa-brain"></i> ResumeRadar AI
+          </a>
+        </div>
+        <div class="nav-center">
+          <a href="{{ url_for('index') }}" class="nav-link nav-link-active">Home</a>
+          {% if is_logged_in %}
+          <a href="#uploadSection" class="nav-link">Upload</a>
+          {% else %}
+          <a href="{{ url_for('auth') }}" class="nav-link">Upload</a>
+          {% endif %}
+        </div>
+        <div class="user-info">
+          {% if is_logged_in %}
+          <div class="user-pill">
+            {% set uname = session.get('username') or '' %}
+            <span class="user-avatar"
+              >{{ uname[:1] | upper if uname else 'U' }}</span
+            >
+            <span class="user-name">{{ uname or 'User' }}</span>
+          </div>
+          <button
+            class="logout-btn"
+            onclick="window.location.href='{{ url_for('logout') }}'"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+          {% else %}
+          <button
+            class="btn-nav-auth"
+            onclick="window.location.href='{{ url_for('auth') }}'"
+          >
+            Sign In / Sign Up
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-gradient-bg"></div>
+
+      <!-- Bubbles removed as requested -->
+      <div class="container hero-content">
+        <!-- Left side -->
+        <div class="hero-left animate-fade">
+          <div class="hero-pill">
+            <span class="dot"></span>
+            AI-Powered Resume Intelligence
+          </div>
+          <h1>
+            Let AI score your resume<br />
+            and suggest the right roles.
+          </h1>
+          <p>
+            One place to see your resume score, key skills and gaps, and
+            matching job role ideas in a clean dashboard.
+          </p>
+
+          <div class="hero-actions">
+            <button id="btnGetStarted" class="btn-hero-primary" type="button">
+              Get Started
+            </button>
+            <button id="btnUploadHero" class="btn-hero-outline" type="button">
+              Upload Resume
+            </button>
+          </div>
+
+          <div class="hero-meta">
+            <div>
+              <span class="hero-meta-label">Features</span>
+              <span class="hero-meta-sub"
+                >AI resume score • Skills & gaps • Role suggestions • Job
+                links</span
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- UPLOAD SECTION (after login) -->
+    <main class="container main-content">
+      <div id="uploadSection" class="upload-section-card animate-fade">
+        <div class="upload-section-header">
+          <div class="section-header section-header-left">
+            <h2>Upload your resume</h2>
+            <p>
+              Get an AI score, strengths & weaknesses, and matching job ideas
+              from your PDF or DOCX.
+            </p>
+          </div>
+        </div>
+
+        <div class="upload-hero">
+          <!-- Left: upload card -->
+          <div class="hero-upload">
+            <form
+              id="uploadForm"
+              action="{{ url_for('analyze') }}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="upload-card">
+                <div class="drop-zone" id="dropZone">
+                  <div class="drop-zone-content">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag & Drop Your Resume</h3>
+                    <p>Supported formats: .pdf, .docx</p>
+                    <span>or</span>
+                    <input
+                      type="file"
+                      id="resumeFile"
+                      name="resume"
+                      accept=".pdf, .docx"
+                      hidden
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      onclick="document.getElementById('resumeFile').click()"
+                    >
+                      Browse Files
+                    </button>
+                  </div>
+                </div>
+
+                <div class="upload-steps">
+                  <div class="step-pill"><span>1</span>Upload</div>
+                  <div class="step-pill"><span>2</span>Analyze</div>
+                  <div class="step-pill"><span>3</span>Get Jobs</div>
+                </div>
+
+                <div id="fileInfo" class="file-info hidden">
+                  <i class="fas fa-file-alt"></i>
+                  <div class="file-text">
+                    <span id="fileName">resume.pdf</span>
+                    <span id="fileMeta" class="file-meta"></span>
+                  </div>
+                  <span id="fileStatus" class="file-status-pill hidden"
+                    >Ready to analyze</span
+                  >
+                  <button type="button" id="removeFile">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+
+                <div class="upload-actions">
+                  <button
+                    type="button"
+                    id="analyzeBtn"
+                    class="btn btn-primary"
+                    {% if not is_logged_in %}disabled{% endif %}
+                  >
+                    <span
+                      >{% if is_logged_in %}Analyze Resume{% else %}Sign in to
+                      analyze{% endif %}</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right: descriptive copy -->
+          <div class="upload-info-panel">
+            <h3>Get a comprehensive resume analysis</h3>
+            <p>
+              Upload your resume (PDF or DOCX) to get an AI-powered breakdown of
+              your profile — from strengths and gaps to suggested roles.
+            </p>
+            <ul class="upload-info-list">
+              <li>Receive an AI-powered resume score.</li>
+              <li>Identify key strengths and weaknesses.</li>
+              <li>Discover job matches based on your resume.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="loaderOverlay" class="loader-overlay hidden">
+          <div class="loader-content">
+            <div class="spinner"></div>
+            <h2>Analyzing resume...</h2>
+            <p>Our AI is scanning your skills and experience.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How it works section -->
+      <section class="how-it-works">
+        <h2>How it works</h2>
+        <p class="how-subtitle">
+          A simple three-step flow from upload to tailored job suggestions.
+        </p>
+        <div class="how-steps">
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <span>1</span>
+            </div>
+            <h3>Sign in & upload</h3>
+            <p>
+              Securely upload your resume in seconds. We only read the content
+              needed for analysis.
+            </p>
+          </div>
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <span>2</span>
+            </div>
+            <h3>AI-driven evaluation</h3>
+            <p>
+              Our model scores your resume, extracts skills, and finds gaps
+              against popular roles.
+            </p>
+          </div>
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <span>3</span>
+            </div>
+            <h3>Insights & job ideas</h3>
+            <p>
+              View a clean dashboard with strengths, weaknesses, and curated job
+              suggestions.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div class="footer-left">
+          <span class="footer-brand"
+            >Intelligent Career Recommendation Platform</span
+          >
+          <span>AI-powered resume analytics to guide your next move.</span>
+        </div>
+        <div class="footer-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="#">Job Recommendations (soon)</a>
+        </div>
+        <div class="footer-right">
+          <span>&copy; {{ 2026 }} All rights reserved.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+  </body>
+</html>

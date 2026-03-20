@@ -1,0 +1,10 @@
+Flask==3.0.0
+Werkzeug==3.0.1
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+google-generativeai
+selenium==4.22.0
+webdriver-manager==4.0.1
+scikit-learn==1.4.0
+beautifulsoup4==4.12.3
