@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | AI Resume Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .form-input:disabled, .form-input[readonly] {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <main class="container main-content">
+        <div class="profile-container">
+            <div class="section-header animate-fade" style="text-align: left; margin-bottom: 30px;">
+                <h1>My Profile</h1>
+                <p>Manage your account and personal information.</p>
+            </div>
+
+            <div class="card animate-fade" style="animation-delay: 0.1s;">
+                <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+                    <div class="form-group" style="text-align: center; margin-bottom: 30px;">
+                        <div style="position: relative; display: inline-block;">
+                            {% if user.photo_filename %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + user.photo_filename) }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">
+                            {% else %}
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; border: 3px solid transparent;">
+                                {{ user.username[:1] | upper if user.username else 'U' }}
+                            </div>
+                            {% endif %}
+                            <label for="photo-upload" style="position: absolute; bottom: 0; right: 0; background: var(--bg-card); border: 1px solid var(--glass-border); color: var(--text-main); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="photo-upload" name="photo" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" name="username" value="{{ user.username }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="{{ user.email }}" readonly title="Email cannot be changed">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" name="full_name" value="{{ user.full_name or '' }}" placeholder="John Doe">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Current Job Title</label>
+                            <input type="text" class="form-input" name="current_job_title" value="{{ user.current_job_title or '' }}" placeholder="e.g. Software Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Company</label>
+                            <input type="text" class="form-input" name="current_company" value="{{ user.current_company or '' }}" placeholder="e.g. Acme Corp">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Years of Experience</label>
+                            <input type="text" class="form-input" name="years_of_experience" value="{{ user.years_of_experience or '' }}" placeholder="e.g. 5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Key Skills</label>
+                            <input type="text" class="form-input" name="skills" value="{{ user.skills or '' }}" placeholder="e.g. Python, React, SQL">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-input" name="phone" value="{{ user.phone or '' }}" placeholder="+1 234 567 8900">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LinkedIn URL</label>
+                            <input type="url" class="form-input" name="linkedin_url" value="{{ user.linkedin_url or '' }}" placeholder="https://linkedin.com/in/johndoe">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bio / Career Objective</label>
+                        <textarea class="form-input" name="bio" rows="4" placeholder="Tell us about your professional background and goals...">{{ user.bio or '' }}</textarea>
+                    </div>
+
+                    <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn-hero-primary" style="padding: 12px 30px; font-size: 1rem; border-radius: 8px; border: none; background: linear-gradient(135deg, #6366f1, #ec4899); color: white; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-save" style="margin-right: 8px;"></i> Save Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

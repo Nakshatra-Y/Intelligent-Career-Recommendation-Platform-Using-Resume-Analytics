@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter Builder | AI Resume Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        @media (max-width: 900px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .editor-container {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 600px;
+        }
+        .editor-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .editor-textarea {
+            flex: 1;
+            width: 100%;
+            padding: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            z-index: 10;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <main class="container main-content">
+        <div class="section-header animate-fade" style="text-align: left; margin-bottom: 10px;">
+            <h1>AI Cover Letter Builder</h1>
+            <p>Generate highly tailored, professional cover letters in seconds.</p>
+        </div>
+
+        <div class="split-layout">
+            <!-- Left Side: Inputs -->
+            <div class="card animate-fade">
+                <h3 style="margin-bottom: 20px;"><i class="fas fa-edit" style="color: var(--primary-color);"></i> Job Details</h3>
+                <form id="cl-form">
+                    <div class="form-group">
+                        <label class="form-label">Job Title</label>
+                        <input type="text" id="cl-job-title" class="form-input" value="{{ job_title }}" placeholder="e.g. Senior Product Manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" id="cl-company" class="form-input" value="{{ company }}" placeholder="e.g. TechFlow Solutions" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Job Description</label>
+                        <textarea id="cl-job-desc" class="form-input" rows="5" placeholder="Paste the job description here..." required>{{ job_description }}</textarea>
+                    </div>
+
+                    <h3 style="margin: 30px 0 20px;"><i class="fas fa-magic" style="color: var(--secondary-color);"></i> Personalization</h3>
+                    <div class="form-group">
+                        <label class="form-label">Why are you interested in this role?</label>
+                        <input type="text" id="cl-interest" class="form-input" placeholder="e.g. I love working on scalable AI products">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Key achievements or skills to highlight?</label>
+                        <input type="text" id="cl-achievements" class="form-input" placeholder="e.g. Scaled user base by 200%, expert in Python">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tone of Letter</label>
+                        <select id="cl-tone" class="form-input">
+                            <option value="Professional & Formal">Professional & Formal</option>
+                            <option value="Enthusiastic & Passionate" selected>Enthusiastic & Passionate</option>
+                            <option value="Confident & Direct">Confident & Direct</option>
+                            <option value="Creative & Bold">Creative & Bold</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="generate-btn" class="btn-hero-primary" style="width: 100%; padding: 15px; margin-top: 10px; font-size: 1.05rem;">
+                        <i class="fas fa-bolt"></i> Generate Cover Letter
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Output Editor -->
+            <div class="editor-container animate-fade" style="animation-delay: 0.1s; position: relative;">
+                <div id="loading-overlay" class="loading-overlay" style="display: none;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; font-weight: 600;">Drafting your cover letter...</p>
+                </div>
+                
+                <div class="editor-header">
+                    <h3 style="font-size: 1.1rem; margin: 0;">Your Cover Letter</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="copyToClipboard()" class="btn-secondary" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34d399;"><i class="fas fa-copy"></i> Copy</button>
+                        <form id="download-form" method="POST" action="{{ url_for('download_cover_letter') }}" style="margin: 0;">
+                            <input type="hidden" name="cover_letter_text" id="download-input">
+                            <button type="button" onclick="downloadWord()" class="btn-secondary" style="background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa;"><i class="fas fa-file-word"></i> Download</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <textarea id="cl-editor" class="editor-textarea" placeholder="Your generated cover letter will appear here. You can click here to edit it before saving or copying."></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('generate-btn');
+            const overlay = document.getElementById('loading-overlay');
+            const editor = document.getElementById('cl-editor');
+            
+            const jobTitle = document.getElementById('cl-job-title').value;
+            const company = document.getElementById('cl-company').value;
+            const jobDesc = document.getElementById('cl-job-desc').value;
+            const interest = document.getElementById('cl-interest').value;
+            const achievements = document.getElementById('cl-achievements').value;
+            const tone = document.getElementById('cl-tone').value;
+
+            if (!jobTitle || !company || !jobDesc) {
+                alert("Please fill out the Job Title, Company, and Job Description.");
+                return;
+            }
+
+            const combinedAnswers = `Interest: ${interest}\nHighlights: ${achievements}\nTone: ${tone}`;
+
+            btn.disabled = true;
+            overlay.style.display = 'flex';
+
+            try {
+                // We use localStorage to grab the extracted_text if available, or just send empty string.
+                // A better flow would store resume_text in the backend session. 
+                // For now we pass what we have.
+                const response = await fetch("{{ url_for('generate_cover_letter') }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        job_title: jobTitle,
+                        company: company,
+                        job_description: jobDesc,
+                        user_answers: combinedAnswers,
+                        resume_text: "Use the candidate's latest uploaded resume context." // Placeholder for actual context logic
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    editor.value = data.cover_letter;
+                } else {
+                    alert(data.error || "Failed to generate cover letter.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred. Please try again.");
+            } finally {
+                btn.disabled = false;
+                overlay.style.display = 'none';
+            }
+        });
+
+        function copyToClipboard() {
+            const text = document.getElementById('cl-editor').value;
+            if(!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        function downloadWord() {
+            const text = document.getElementById('cl-editor').value;
+            if(!text) {
+                alert('Please generate a cover letter first.');
+                return;
+            }
+            document.getElementById('download-input').value = text;
+            document.getElementById('download-form').submit();
+        }
+    </script>
+</body>
+</html>

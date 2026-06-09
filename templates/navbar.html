@@ -1,0 +1,103 @@
+<nav class="navbar">
+  <div class="container nav-content">
+    <div class="logo">
+      <a href="{{ url_for('index') }}">
+        <i class="fas fa-brain"></i> ResumeRadar AI
+      </a>
+    </div>
+    <div class="nav-center">
+      
+      <!-- Mega Menu Item -->
+      <div class="nav-item-dropdown">
+        <a href="#" class="nav-link">Features <i class="fas fa-chevron-down" style="font-size: 0.8em; margin-left: 4px;"></i></a>
+        <div class="mega-menu">
+          <div class="mega-menu-grid">
+            
+            <!-- Column 1 -->
+            <div class="mega-col">
+              <div class="mega-col-title">AI Tools</div>
+              <a href="{{ url_for('cover_letter') }}" class="mega-item">
+                <div class="mega-icon"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="mega-text">
+                  <div class="mega-item-title">AI Cover Letter Writer</div>
+                  <div class="mega-item-desc">Generates customized cover letters.</div>
+                </div>
+              </a>
+              <a href="{{ url_for('profile') }}" class="mega-item">
+                <div class="mega-icon"><i class="fas fa-user-circle"></i></div>
+                <div class="mega-text">
+                  <div class="mega-item-title">Profile Manager</div>
+                  <div class="mega-item-desc">Manage your personal details.</div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Column 2 -->
+            <div class="mega-col">
+              <div class="mega-col-title">Analysis & Insights</div>
+              <a href="{{ url_for('index') }}#uploadSection" class="mega-item">
+                <div class="mega-icon"><i class="fas fa-file-signature"></i></div>
+                <div class="mega-text">
+                  <div class="mega-item-title">Resume Checker</div>
+                  <div class="mega-item-desc">Get instant feedback for your resume.</div>
+                </div>
+              </a>
+              <a href="{{ url_for('jobs') }}" target="_blank" class="mega-item">
+                <div class="mega-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="mega-text">
+                  <div class="mega-item-title">Job Matcher</div>
+                  <div class="mega-item-desc">Discover tailored roles.</div>
+                </div>
+              </a>
+              <a href="#" class="mega-item">
+                <div class="mega-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="mega-text">
+                  <div class="mega-item-title">Career Insights</div>
+                  <div class="mega-item-desc">Identify strengths and gaps.</div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Column 3 -->
+            <div class="mega-col mega-col-alt">
+              <div class="mega-col-title">Resources</div>
+              <a href="#" class="mega-link-simple">Software Engineering</a>
+              <a href="#" class="mega-link-simple">Data Science</a>
+              <a href="#" class="mega-link-simple">Business Administration</a>
+              <a href="#" class="mega-link-simple">Healthcare</a>
+              <a href="#" class="mega-link-simple" style="color: var(--primary-color); margin-top: 10px; font-weight: 600;">View all examples <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <a href="{{ url_for('index') }}#uploadSection" class="nav-link">Resume Analyzer</a>
+      <a href="{{ url_for('jobs') }}" target="_blank" class="nav-link">Job Matcher</a>
+      <a href="{{ url_for('cover_letter') }}" class="nav-link">Cover Letters</a>
+    </div>
+    
+    <div class="user-info">
+      {% if 'user_id' in session %}
+      <a href="{{ url_for('profile') }}" style="text-decoration: none;">
+        <div class="user-pill" style="cursor: pointer;">
+          {% set uname = session.get('username') or '' %}
+          {% if session.get('photo_filename') %}
+          <img src="{{ url_for('static', filename='uploads/profiles/' + session.get('photo_filename')) }}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: inline-block;">
+          {% else %}
+          <span class="user-avatar">{{ uname[:1] | upper if uname else 'U' }}</span>
+          {% endif %}
+          <span class="user-name">{{ uname or 'User' }}</span>
+        </div>
+      </a>
+      <button class="logout-btn" onclick="window.location.href='{{ url_for('logout') }}'">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+      {% else %}
+      <button class="btn-nav-auth" onclick="window.location.href='{{ url_for('auth') }}'">
+        Sign In / Sign Up
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</nav>
